@@ -65,7 +65,7 @@ namespace E_commerce.API.Controllers
         }
         [HttpGet("Category/{id}")]
 
-        public async Task<IActionResult> GetCategoryById(int id)
+        public async Task<IActionResult> GetProductByCategoryId(int id)
         {
             var res = await GenProduct.FindAll(s => s.CategoryId == id, s => s.Category);
             if (res.Count==0) return NotFound(responesHandler.NotFound<Product>($"ther is no Product with CatogoryId {id}"));
@@ -73,7 +73,7 @@ namespace E_commerce.API.Controllers
             return Ok(responesHandler.Success(data));
         }
         [HttpGet("Category/{name:alpha}")]
-        public async Task<IActionResult> GetCategoryName(string name)
+        public async Task<IActionResult> GetProductByCategoryName(string name)
         {
             var res = await GenProduct.FindAll(
               s => s.Category.Name.ToLower().Trim() == name.ToLower().Trim(),
