@@ -106,13 +106,14 @@ namespace E_commerce.API.Controllers
             // 4️⃣ شوف هل العنصر موجود بالفعل في السلة؟
             var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
             // 🟧 احسب الكمية الحالية + الجديدة
-            int existingQty = cartItem?.Quantity ?? 0;
+            int existingQty = cartItem?.Quantity ?? 0; 
             int totalRequested = existingQty + quantity;
 
             // 5️⃣ Check على الكمية
-            if (product.Quantity < totalRequested)
+            if (product.Quantity < totalRequested) 
             {
                 int canAdd = product.Quantity - existingQty;
+                //20
 
                 if (canAdd <= 0)
                     return BadRequest(localizer["outOfStockMaxAdded"].Value);

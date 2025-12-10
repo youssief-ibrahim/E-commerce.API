@@ -31,8 +31,14 @@ namespace E_commerce.Core.Helper
             CreateMap<ShoppingCart, AllShoppingCartDTO>().ForMember(d => d.Items, opt => opt.MapFrom(s => s.CartItems)).ReverseMap();
             CreateMap<ShoppingCart, CreateShoppingCartDTO>().ReverseMap();
             //cart item
+
+            //CreateMap<ShoppingCart, AllShoppingCartDTO>()
+            //.ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.CartItems)).ReverseMap();
+
             CreateMap<ShoppingCart, AllShoppingCartDTO>()
-            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.CartItems)).ReverseMap();
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.CartItems))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Name))
+            .ReverseMap();
 
             CreateMap<CartItem, AllCartItemDTO>()
              .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))

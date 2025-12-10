@@ -13,6 +13,7 @@ namespace E_commerce.Core.DTO.ShoppingCart
 
         //FK
         public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
         public List<AllCartItemDTO> Items { get; set; } = new();
     }
 }
