@@ -26,7 +26,7 @@ namespace E_commerce.Core.Basic
         public static async Task<List<string>> GetAllPermissions(RoleManager<ApplicationRole> roleManager)
         {
             var allPermissions = new List<string>();
-            var modules = await roleManager.Roles.ToListAsync();
+            var modules = Enum.GetValues(typeof(Moduls));
 
             foreach (var module in modules)
             {

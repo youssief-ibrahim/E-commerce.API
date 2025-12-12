@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Data;
+using AutoMapper;
 using E_commerce.Core.Basic;
 using E_commerce.Core.DTO.Product;
 using E_commerce.Core.IReposatory;
 using E_commerce.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -85,7 +87,10 @@ namespace E_commerce.API.Controllers
         }
 
         [HttpPost]
-          public async Task<IActionResult> Create([FromForm] CreateProductDTO createProductDTO)
+        //[Authorize("Permission.Product.Create")]
+        [Authorize(Roles="User")]
+        [Authorize(Roles = "Honer")]
+        public async Task<IActionResult> Createsdasd([FromForm] CreateProductDTO createProductDTO)
           {
             if(!ModelState.IsValid) return BadRequest(ModelState);
             var product=Mapper.Map<Product>(createProductDTO);

@@ -62,7 +62,7 @@ namespace E_commerce.API.Controllers
             var cartitems = await GenCartItem.FindAll(c => c.ShoppingCart.UserId == createOrder.UserId,r=>r.Product,r=>r.ShoppingCart);
             
             if (cartitems.Count == 0) return BadRequest(localizer["cartEmpty"].Value);
-            // 1️⃣ تحقق من المخزون الأول
+            // check stock
             foreach (var item in cartitems)
             {
                 if (item.Product.Quantity < item.Quantity)
@@ -77,12 +77,10 @@ namespace E_commerce.API.Controllers
                 Status = "Pending",
             };
             await GenOrder.Create(order);
-            GenOrder.Save(); // هنا الـ Order بياخد ID جديد
+            GenOrder.Save(); // to get order id
 
-            // 3️⃣ إنشاء الـ OrderItems
             foreach (var item in cartitems)
             {
-                // تحديث المخزون
                 item.Product.Quantity -= item.Quantity;
                 GenProduct.update(item.Product);
 
@@ -96,16 +94,13 @@ namespace E_commerce.API.Controllers
 
                 await GenOrderItem.Create(orderItem);
 
-                // امسح العنصر من السلة
                 GenCartItem.delete(item);
             }
-            // 4️⃣ Save لكل العمليات
+
             GenOrderItem.Save();
             GenProduct.Save();
             GenCartItem.Save();
 
-            //foreach (var cart in cartitems)
-            //    GenCartItem.delete(cart);
             var data = Mapper.Map<AllOrderDTO>(order);
             return Ok(responesHandler.Success(data));
         }
@@ -136,7 +131,7 @@ namespace E_commerce.API.Controllers
         {
             var existingOrder = await GenOrder.GetById(s => s.Id == id, r => r.User);
             if (existingOrder == null) return NotFound(responesHandler.NotFound<Order>($"Order with id {id} not found"));
-            //  اختياري: تحديث المخزون
+           
             var existingOrderItems = await GenOrderItem.FindAll(oi => oi.OrderId == existingOrder.Id);
             foreach (var item in existingOrderItems)
             {

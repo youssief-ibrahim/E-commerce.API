@@ -13,7 +13,7 @@ namespace E_commerce.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles ="Admin")]
+    //[Authorize(Roles ="Admin")]
     public class RoleController : ControllerBase
     {
         private readonly RoleManager<ApplicationRole> roleManager;

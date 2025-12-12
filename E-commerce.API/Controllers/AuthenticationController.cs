@@ -14,14 +14,16 @@ namespace E_commerce.API.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<ApplicationRole> roleManager;
         private readonly ITokenReposatory tokenService;
         private readonly IStringLocalizer<AuthenticationController> localizer;
 
-        public AuthenticationController(UserManager<ApplicationUser> userManager, ITokenReposatory tokenService, IStringLocalizer<AuthenticationController> localizer)
+        public AuthenticationController(UserManager<ApplicationUser> userManager, ITokenReposatory tokenService, IStringLocalizer<AuthenticationController> localizer, RoleManager<ApplicationRole> roleManager)
         {
             this.userManager = userManager;
             this.tokenService = tokenService;
             this.localizer = localizer;
+            this.roleManager = roleManager;
         }
 
         [HttpPost("login")]
@@ -38,7 +40,7 @@ namespace E_commerce.API.Controllers
                 return BadRequest(localizer["emailnotconfirmed"].Value);
 
             // Generate access token
-            var accessToken = await tokenService.GenerateJwtToken(user, userManager);
+            var accessToken = await tokenService.GenerateJwtToken(user, userManager,roleManager);
 
             var newRefreshToken = tokenService.GenerateRefreshToken();
 
@@ -70,7 +72,7 @@ namespace E_commerce.API.Controllers
             var storedToken = user.RefreshTokens.FirstOrDefault(t => t.Token == refreshToken);
             if (storedToken == null || !storedToken.IsActive)
                 return BadRequest(localizer["invalidorrevokedrefreshtoken"].Value);
-            var accessToken = await tokenService.GenerateJwtToken(user, userManager);
+            var accessToken = await tokenService.GenerateJwtToken(user, userManager,roleManager);
             return Ok(new TokenResnoseDTO
             {
                 Token = accessToken,
@@ -109,7 +111,7 @@ namespace E_commerce.API.Controllers
             // 🔥 If NOT EXPIRED → use it (DO NOT create new)
             if (storedToken.ExpireOn > DateTime.Now)
             {
-                var newAccessToken = await tokenService.GenerateJwtToken(user, userManager);
+                var newAccessToken = await tokenService.GenerateJwtToken(user, userManager, roleManager);
 
                 return Ok(new TokenResnoseDTO
                 {
@@ -125,7 +127,7 @@ namespace E_commerce.API.Controllers
             user.RefreshTokens.Add(newRefresh);
             await userManager.UpdateAsync(user);
 
-            var accessToken2 = await tokenService.GenerateJwtToken(user, userManager);
+            var accessToken2 = await tokenService.GenerateJwtToken(user, userManager, roleManager);
 
             return Ok(new TokenResnoseDTO
             {

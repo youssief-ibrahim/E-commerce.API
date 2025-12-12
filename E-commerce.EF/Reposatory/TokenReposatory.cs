@@ -22,7 +22,7 @@ namespace E_commerce.EF.Reposatory
         {
             this.config = config;
         }
-        public async Task<string> GenerateJwtToken(ApplicationUser user, UserManager<ApplicationUser> userManager)
+        public async Task<string> GenerateJwtToken(ApplicationUser user, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             var claims = new List<Claim>
             {
@@ -32,7 +32,26 @@ namespace E_commerce.EF.Reposatory
             };
 
             var roles = await userManager.GetRolesAsync(user);
-            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+            //claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
+                // Load the Role from DB
+                var roleEntity = await roleManager.FindByNameAsync(role);
+
+                if (roleEntity != null)
+                {
+                    // 2️⃣ Load Permissions assigned to this role
+                    var roleClaims = await roleManager.GetClaimsAsync(roleEntity);
+
+                    foreach (var rc in roleClaims)
+                    {
+                        claims.Add(new Claim("Permission", rc.Value));
+                    }
+                }
+            }
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(config["JWT:SigningKey"])

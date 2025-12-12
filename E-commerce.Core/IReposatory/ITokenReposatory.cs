@@ -10,7 +10,7 @@ namespace E_commerce.Core.IReposatory
 {
     public interface ITokenReposatory
     {
-        Task<string> GenerateJwtToken(ApplicationUser user, UserManager<ApplicationUser> userManager);
+        Task<string> GenerateJwtToken(ApplicationUser user, UserManager<ApplicationUser> userManager,RoleManager<ApplicationRole>roleManager);
         RefreshToken GenerateRefreshToken();
         Task<bool> RevokeRefreshTokenAsync(string token, UserManager<ApplicationUser> userManager);
     }

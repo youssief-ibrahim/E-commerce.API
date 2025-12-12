@@ -79,13 +79,13 @@ namespace E_commerce.API.Controllers
             {
                 return NotFound(localizer["usernotfound"].Value);
             }
-            // 1️⃣ هات السلة لو موجودة
+            // find the cart for the user
             var cart = await context.ShoppingCarts
                 .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
                .FirstOrDefaultAsync(c => c.UserId == userId);
 
-            // 2️⃣ لو السلة مش موجودة → اعمل واحدة جديدة
+            // if no cart, create one
             if (cart == null)
             {
                 cart = new ShoppingCart
@@ -98,22 +98,20 @@ namespace E_commerce.API.Controllers
                 GenShopingCart.Save();
             }
 
-            // 3️⃣ Check if product exists in DB
+            // Check if product exists in DB
             var product = await GenProduct.GetById(p => p.Id == productId);
             if (product == null)
                 return NotFound(localizer["productNotFound"].Value);
 
-            // 4️⃣ شوف هل العنصر موجود بالفعل في السلة؟
+            // check if product already in cart
             var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
-            // 🟧 احسب الكمية الحالية + الجديدة
+           
             int existingQty = cartItem?.Quantity ?? 0; 
             int totalRequested = existingQty + quantity;
 
-            // 5️⃣ Check على الكمية
             if (product.Quantity < totalRequested) 
             {
                 int canAdd = product.Quantity - existingQty;
-                //20
 
                 if (canAdd <= 0)
                     return BadRequest(localizer["outOfStockMaxAdded"].Value);
@@ -123,7 +121,6 @@ namespace E_commerce.API.Controllers
 
             if (cartItem == null)
             {
-                // 5️⃣ لو مش موجود → أضفه
                 cartItem = new CartItem
                 {
                     ProductId = productId,
@@ -131,11 +128,8 @@ namespace E_commerce.API.Controllers
                     ShoppingCartId = cart.Id
                 };
 
-                // أفضل مسار: أضف للـ repo ثم احفظ ثم أدخله في الذاكرة (نفس الـ instance)
                 await GenCartItem.Create(cartItem);
-                GenCartItem.Save();      // الآن row تم إنشاؤه فعلياً في DB و cartItem.Id تعبىء
-
-                //cart.CartItems.Add(cartItem); // أضفه في الذاكرة عشان DTO يراه
+                GenCartItem.Save();    
             }
             else
             {
@@ -144,8 +138,6 @@ namespace E_commerce.API.Controllers
                 GenCartItem.Save();
             }
 
-
-            // 8️⃣ رجّع DTO
             var data = Mapper.Map<AllShoppingCartDTO>(cart);
 
             return Ok(responesHandler.Success(data));

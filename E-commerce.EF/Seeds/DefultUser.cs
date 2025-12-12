@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using E_commerce.Core.Basic;
@@ -16,7 +17,7 @@ namespace E_commerce.EF.Seeds
         {
             ApplicationUser user = new ApplicationUser()
             {
-                Name= "mr.Admin",
+                Name = "mr.Admin",
                 UserName = "Admin",
                 Email = "Admin@gmail.com",
             };
@@ -29,7 +30,7 @@ namespace E_commerce.EF.Seeds
             var allRoles = (await roleManager.Roles
            .Select(r => r.Name)
            .ToListAsync());
-             userExists = await userManager.FindByNameAsync(user.UserName); // cause i change identity to int
+            userExists = await userManager.FindByNameAsync(user.UserName); // cause i change identity to int
 
             foreach (var role in allRoles)
             {
@@ -38,17 +39,42 @@ namespace E_commerce.EF.Seeds
                     await userManager.AddToRoleAsync(userExists, role);
                 }
             }
-            // give the admin ALL Permetion
-            var adminClaims = await userManager.GetClaimsAsync(userExists);
-            var allPermissions = await Permission.GetAllPermissions(roleManager);
+        }
+        public  async Task SeedPermissionsAsync( RoleManager<ApplicationRole> roleManager, ApplicationRole role, string module)
+        {
+            var existingClaims = await roleManager.GetClaimsAsync(role);
+            var permissions = Permission.GetPermissionsList(module);
 
-            foreach (var perm in allPermissions)
+            foreach (var perm in permissions)
             {
-                if (!adminClaims.Any(c => c.Type == "Permission" && c.Value == perm))
+                if (!existingClaims.Any(c => c.Type == "Permission" && c.Value == perm))
                 {
-                    await userManager.AddClaimAsync(userExists, new("Permission", perm));
+                    await roleManager.AddClaimAsync(role, new Claim("Permission", perm));
                 }
             }
+        }
+        public static async Task SeedAdminAllPermissions(RoleManager<ApplicationRole> roleManager)
+        {
+            var adminRole = await roleManager.FindByNameAsync("Admin");
+            if (adminRole == null) return;
+
+            var existingClaims = await roleManager.GetClaimsAsync(adminRole);
+
+            var modules = Enum.GetNames(typeof(Moduls));
+
+                foreach (var module in modules)
+                {
+                    var permissions = Permission.GetPermissionsList(module);
+
+                    foreach (var permission in permissions)
+                    {
+                        if (!existingClaims.Any(c => c.Type == "Permission" && c.Value == permission))
+                        {
+                            await roleManager.AddClaimAsync(adminRole, new Claim("Permission", permission));
+                        }
+                    }
+                }
+            
         }
 
     }

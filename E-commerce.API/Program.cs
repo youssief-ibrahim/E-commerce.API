@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using E_commerce.API.Filtter;
 using E_commerce.API.Middlewares;
 using E_commerce.Core.Basic;
 using E_commerce.Core.Helper;
@@ -11,6 +12,7 @@ using E_commerce.EF.Localization;
 using E_commerce.EF.Reposatory;
 using E_commerce.EF.Seeds;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -56,6 +58,14 @@ namespace E_commerce.API
             builder.Services.AddScoped<ResponseHandler>();
 
             builder.Services.AddScoped<IEmailService, EmailSender>();
+
+            builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermetionPolicyProvider>();
+
+            builder.Services.AddScoped<IAuthorizationHandler, PermetionAuthrizationHandelar>();
+
+            builder.Services.Configure<SecurityStampValidatorOptions>(option =>
+            option.ValidationInterval = TimeSpan.Zero
+           );
 
             builder.Services.AddAuthentication(option =>
             {
@@ -158,6 +168,8 @@ namespace E_commerce.API
 
                 await DefaultRoles.SeedAsync(rolemanger);
                 await DefultUser.GenerateAdmin(userManager, rolemanger);
+                await DefultUser.SeedAdminAllPermissions(rolemanger);
+
 
             }
 
