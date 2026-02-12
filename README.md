@@ -44,3 +44,15 @@ E-Commerce Web API built with ASP.NET Core following Onion Architecture principl
 ## 📸 Project Screenshots
 
 ## 🗄️ Database Diagram
+![Database Diagram](images/Database_Diagram.png)
+
+### 👤 Account & Authentication
+![Account](images/Account_Authentication.png)
+
+### 🗂️ Category & Orders
+![Category Order](images/Category_Order.png)
+
+### 📦 Products , Roles & Shopping Cart
+![Product Role Cart](images/Product_Role_ShoppingCart.png)
+
+---
