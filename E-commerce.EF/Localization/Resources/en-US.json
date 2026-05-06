@@ -58,5 +58,6 @@
     "shoppingCartNotFound": "Shopping cart not found for the user.",
     "productNotFoundInCart": "Product not found in the shopping cart.",
     "requestedQuantityExceedsStock": "Requested quantity exceeds available stock.",
-    "cartClearedSuccessfully": "Cart cleared successfully"
+    "cartClearedSuccessfully": "Cart cleared successfully",
+
 }

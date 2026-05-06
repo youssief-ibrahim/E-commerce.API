@@ -82,7 +82,7 @@ namespace E_commerce.API.Controllers
                 
                 await emailService.SendEmailAsync(
                    email:  register.Email,
-                   subject:  localizer["confirmyouremail"].Value,
+                   subject:  localizer["confirmationEmail"].Value,
                   htmlMessage: $"{localizer["confirmEmailCode"].Value} {code}"
                 );
                 await userManager.AddToRoleAsync(user, "User");

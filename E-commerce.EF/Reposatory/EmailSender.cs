@@ -13,11 +13,9 @@ namespace E_commerce.EF.Reposatory
     {
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            // Your Gmail
-            var fromMail = "youssiefibrahim3@gmail.com";
+            var fromMail = "";
 
-            // Your App Password (NOT Gmail password)
-            var fromPassword = "eyhk ucfi zuvl eqgn";
+            var fromPassword = "";
 
             var message = new MailMessage();
             message.From = new MailAddress(fromMail);

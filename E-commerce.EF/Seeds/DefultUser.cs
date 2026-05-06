@@ -40,7 +40,7 @@ namespace E_commerce.EF.Seeds
                 }
             }
         }
-        public  async Task SeedPermissionsAsync( RoleManager<ApplicationRole> roleManager, ApplicationRole role, string module)
+        public  static async Task SeedPermissionsAsync( RoleManager<ApplicationRole> roleManager, ApplicationRole role, string module)
         {
             var existingClaims = await roleManager.GetClaimsAsync(role);
             var permissions = Permission.GetPermissionsList(module);

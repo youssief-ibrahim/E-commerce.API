@@ -25,7 +25,7 @@ namespace E_commerce.API.Controllers
         private readonly IStringLocalizer<ShoppingCart> localizer;
         private readonly ResponseHandler responesHandler;
         private readonly ApplicationDbContext context;
-
+        
         public ShoppingCartController(IGenericReposatory<ShoppingCart> GenShopingCart, IGenericReposatory<Product> GenProduct, IGenericReposatory<CartItem> GenCartItem, IMapper Mapper, IStringLocalizer<ShoppingCart> localizer, ResponseHandler responesHandler, ApplicationDbContext context)
         {
             this.GenShopingCart = GenShopingCart;
@@ -221,6 +221,7 @@ namespace E_commerce.API.Controllers
                 TotalQuantity = ci.Quantity,
                 UnitePrice = ci.Product.Price,
                 TotalPrice = ci.Quantity * ci.Product.Price
+
             });
 
             var summary = new
